@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Budget - SaveWise</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #fff8f5;
+            color: #4a3b38;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #fff1ec !important;
+            box-shadow: 0 2px 10px rgba(80, 50, 40, 0.08);
+        }
+
+        .navbar-brand {
+            color: #6b4f4b;
+            font-size: 22px;
+        }
+
+        .nav-link {
+            color: #6b4f4b !important;
+            margin-left: 8px;
+        }
+
+        .nav-link:hover {
+            color: #c47f7a !important;
+        }
+
+        .budget-box {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 5px 20px rgba(80, 50, 40, 0.08);
+        }
+
+        .budget-box h1 {
+            color: #5b4440;
+        }
+
+        .budget-box p {
+            color: #8b716c;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+            border: 1px solid #eadbd6;
+            padding: 12px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #c98f89;
+            box-shadow: 0 0 0 0.2rem rgba(201, 143, 137, 0.15);
+        }
+
+        .set-btn {
+            background-color: #c98f89;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 22px;
+        }
+
+        .set-btn:hover {
+            background-color: #b97c76;
+            color: white;
+        }
+
+        .budget-card {
+            border: none;
+            border-radius: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 5px 18px rgba(80, 50, 40, 0.08);
+            padding: 22px;
+        }
+
+        .section-title {
+            color: #5b4440;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            color: #a85d5d !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+
+            <a class="navbar-brand fw-bold" href="/dashboard/">
+                SaveWise 🌸
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard/">Dashboard</a>
+                <a class="nav-link" href="/income/">Income</a>
+                <a class="nav-link" href="/expense/">Expenses</a>
+                <a class="nav-link" href="/budget/">Budget</a>
+                <a class="nav-link" href="/goal/">Goals</a>
+                <a class="nav-link" href="/reports/">Reports</a>
+                <a class="nav-link" href="/savings/">Savings</a>
+                <a class="nav-link logout-btn" href="/logout/">Logout</a>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <div class="container">
+
+        <!-- Budget Form -->
+        <div class="budget-box">
+
+            <h1 class="fw-bold">Set Your Budget 📊</h1>
+
+            <p>Plan how much you want to spend and stay in control.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <script>
+                        alert("{{ message }}");
+                    </script>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+
+                    <select class="form-select" name="category">
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Education">Education</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Budget Amount</label>
+
+                    <input type="number"
+                           class="form-control"
+                           name="amount"
+                           placeholder="Enter budget amount">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Month</label>
+
+                    <input type="text"
+                           class="form-control"
+                           name="month"
+                           placeholder="September">
+                </div>
+
+                <button type="submit" class="set-btn">
+                    Set Budget
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- My Budgets -->
+        <h3 class="section-title mt-5">My Budgets 📊</h3>
+
+        {% for budget in budgets %}
+
+        <div class="budget-card mt-3">
+
+            <h5>{{ budget.category }}</h5>
+
+            <p>Budget: ₹{{ budget.amount }}</p>
+
+            <p>Spent: ₹{{ budget.spent }}</p>
+
+            <p>Remaining: ₹{{ budget.remaining }}</p>
+
+            {% if budget.exceeded %}
+                <p class="text-danger fw-bold">
+                    ⚠️ Budget exceeded!
+                </p>
+            {% endif %}
+
+            <p>Month: {{ budget.month }}</p>
+
+        </div>
+
+        {% empty %}
+
+        <p>No budgets added yet.</p>
+
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Expenses - SaveWise</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #fff8f5;
+            color: #4a3b38;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #fff1ec !important;
+            box-shadow: 0 2px 10px rgba(80, 50, 40, 0.08);
+        }
+
+        .navbar-brand {
+            color: #6b4f4b;
+            font-size: 22px;
+        }
+
+        .nav-link {
+            color: #6b4f4b !important;
+            margin-left: 8px;
+        }
+
+        .nav-link:hover {
+            color: #c47f7a !important;
+        }
+
+        .expense-box {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 5px 20px rgba(80, 50, 40, 0.08);
+        }
+
+        .expense-box h1 {
+            color: #5b4440;
+        }
+
+        .expense-box p {
+            color: #8b716c;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+            border: 1px solid #eadbd6;
+            padding: 12px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #c98f89;
+            box-shadow: 0 0 0 0.2rem rgba(201, 143, 137, 0.15);
+        }
+
+        .add-btn {
+            background-color: #c98f89;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 22px;
+        }
+
+        .add-btn:hover {
+            background-color: #b97c76;
+            color: white;
+        }
+
+        .logout-btn {
+            color: #a85d5d !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+
+            <a class="navbar-brand fw-bold" href="/dashboard/">
+                SaveWise 🌸
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard/">Dashboard</a>
+                <a class="nav-link" href="/income/">Income</a>
+                <a class="nav-link" href="/expense/">Expenses</a>
+                <a class="nav-link" href="/budget/">Budget</a>
+                <a class="nav-link" href="/goal/">Goals</a>
+                <a class="nav-link" href="/reports/">Reports</a>
+                <a class="nav-link" href="/savings/">Savings</a>
+                <a class="nav-link logout-btn" href="/logout/">Logout</a>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <!-- Expense Form -->
+    <div class="container">
+
+        <div class="expense-box">
+
+            <h1 class="fw-bold">Add Expense 💸</h1>
+
+            <p>Record where your money was spent and keep track of your spending.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <script>
+                        alert("{{ message }}");
+                    </script>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+
+                    <select class="form-select" name="category">
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Education">Education</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Amount</label>
+
+                    <input type="number"
+                           class="form-control"
+                           name="amount"
+                           placeholder="Enter amount">
+                </div>
+
+                <button type="submit" class="add-btn">
+                    Add Expense
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
