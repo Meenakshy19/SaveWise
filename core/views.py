@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
 from .models import Income,Expense,Budget,Goal,Savings
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 def home(request):
@@ -26,13 +29,31 @@ def signup(request):
             messages.error(request, "Passwords do not match!")
 
         else:
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=email,
                 first_name=name,
                 email=email,
-                password=password
+                password=password,
+                is_active=False
             )
-            messages.success(request, "Account created successfully!")
+
+            token = default_token_generator.make_token(user)
+
+            verification_link = request.build_absolute_uri(
+                reverse('verify_email', args=[user.pk, token])
+            )
+
+            send_mail(
+                'Verify your SaveWise account',
+                f'Click this link to verify your account: {verification_link}',
+                None,
+                [email],
+            )
+
+            messages.success(
+                request,
+                "Account created! Please check your email to verify your account."
+            )
 
     return render(request, 'core/signup.html')
 def login(request):
@@ -50,6 +71,30 @@ def login(request):
             messages.error(request, "Invalid email or password!")
 
     return render(request, 'core/login.html')
+
+def verify_email(request, user_id, token):
+    try:
+        user = User.objects.get(pk=user_id)
+
+        if default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+
+            auth_login(request, user)
+            messages.success(request, "Email verified successfully!")
+            return redirect('dashboard')
+
+        else:
+            messages.error(request, "Invalid or expired verification link.")
+            return redirect('signup')
+
+    except User.DoesNotExist:
+        messages.error(request, "User not found.")
+        return redirect('signup')
+        
+def forgot_password(request):
+    return render(request, 'core/forgot_password.html')
+    
 @login_required
 def dashboard(request):
     incomes = Income.objects.filter(user=request.user)
