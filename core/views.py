@@ -35,36 +35,17 @@ def signup(request):
                 first_name=name,
                 email=email,
                 password=password,
-                is_active=False
+                is_active=True
             )
 
-            token = default_token_generator.make_token(user)
-
-           verification_link = f"https://savewise-knus.onrender.com/verify-email/{user.pk}/{token}/"
-
-            resend.api_key = os.getenv("RESEND_API_KEY")
-            print("Sending verification email...")
-
-            resend.Emails.send({
-                "from": "onboarding@resend.dev",
-                "to": [email],
-                "subject": "Verify your SaveWise account",
-                "html": f"""
-                    <h2>Welcome to SaveWise!</h2>
-                    <p>Click the button below to verify your email:</p>
-                    <p>
-                        <a href="{verification_link}">
-                            Verify My Email
-                        </a>
-                    </p>
-                """
-            })
-            print("Verification email request sent!")
+            auth_login(request, user)
 
             messages.success(
                 request,
-                "Account created! Please check your email to verify your account."
+                "Account created successfully!"
             )
+
+            return redirect('dashboard')
 
     return render(request, 'core/signup.html')
 def login(request):
