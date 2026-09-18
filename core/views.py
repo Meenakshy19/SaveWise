@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
 from .models import Income,Expense,Budget,Goal,Savings
-from django.core.mail import send_mail
+import os
+import resend
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -39,16 +40,26 @@ def signup(request):
 
             token = default_token_generator.make_token(user)
 
-            verification_link = request.build_absolute_uri(
-                reverse('verify_email', args=[user.pk, token])
-            )
+           verification_link = f"https://savewise-knus.onrender.com/verify-email/{user.pk}/{token}/"
 
-            send_mail(
-                'Verify your SaveWise account',
-                f'Click this link to verify your account: {verification_link}',
-                None,
-                [email],
-            )
+            resend.api_key = os.getenv("RESEND_API_KEY")
+            print("Sending verification email...")
+
+            resend.Emails.send({
+                "from": "onboarding@resend.dev",
+                "to": [email],
+                "subject": "Verify your SaveWise account",
+                "html": f"""
+                    <h2>Welcome to SaveWise!</h2>
+                    <p>Click the button below to verify your email:</p>
+                    <p>
+                        <a href="{verification_link}">
+                            Verify My Email
+                        </a>
+                    </p>
+                """
+            })
+            print("Verification email request sent!")
 
             messages.success(
                 request,
